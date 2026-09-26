@@ -69,3 +69,32 @@ Proyecto de grado — Ingeniería en Telecomunicaciones, Universidad Compensar (
 - Programación vía bootloader UART (sin ST-Link)
 
 ## Ver [CHANGELOG.md](CHANGELOG.md) para el detalle de cada versión.
+
+Cada carpeta (`NodoBovino/`, `EstacionBase/`) es un proyecto completo e independiente de STM32CubeIDE (incluye `.project`, `.cproject`, `.mxproject`, el `.ioc` de CubeMX, y el código fuente en `Core/`).
+
+## Herramientas
+
+- STM32CubeMX
+- STM32CubeIDE
+- STM32CubeProgrammer
+- HAL de STM32 (sin Arduino Core ni librerías Arduino)
+
+## Cómo compilar y flashear
+
+1. Abre el proyecto correspondiente (`NodoBovino` o `EstacionBase`) en STM32CubeIDE.
+2. `Project` → `Clean...` → `Build Project`.
+3. Conecta la placa por USB-C. Entra en modo bootloader: mantén presionado **KEY**, presiona **RST** una vez, suelta **KEY**.
+4. Abre **STM32CubeProgrammer**, interfaz **UART**, selecciona el puerto COM correspondiente, **Connect**.
+5. Pestaña **Erasing & Programming** → selecciona el `.bin` generado → dirección `0x08000000` → **Start Programming**.
+6. Presiona **RST** (sin mantener KEY) para arrancar el firmware normal.
+7. Verifica por terminal serie (115200 baud, 8N1) que el nodo imprima su mensaje de inicialización.
+
+> No se requiere ST-Link — la carga se hace vía bootloader UART, siguiendo el procedimiento anterior.
+
+## Metodología
+
+Este proyecto sigue una metodología experimental estricta: ningún valor de configuración de hardware (pines, opcodes, parámetros de radio) se asume — todos están confirmados contra el datasheet del SX1262 y verificados experimentalmente en el hardware real antes de darse por válidos. Cada fase se valida con evidencia medible antes de avanzar a la siguiente.
+
+## Licencia
+
+Pendiente de definir.
