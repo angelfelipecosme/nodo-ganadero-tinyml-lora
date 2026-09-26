@@ -1,0 +1,20 @@
+# STM32CubeIDE build outputs
+Debug/
+Release/
+*.o
+*.d
+*.elf
+*.map
+*.list
+
+# STM32CubeIDE workspace/metadata (NO versionar, es local de cada PC)
+.metadata/
+.settings/
+*.launch
+
+# CubeMX backup files
+*.ioc.bak
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
