@@ -1,19 +1,22 @@
 # Changelog
 
 ## [v0.3.0] - 2026-10-04
-### Fase 2 y 2b completadas — MPU de 6 ejes en Nodo Bovino
+### Fase 2 y 2b completadas — MPU de 6 ejes calibrado en Nodo Bovino
 - I2C1 (PB6/PB7, 100 kHz), dirección 0x68. WHO_AM_I = 0x70 (el register map del MPU-6050 indica 0x68; 0x70 es consistente con MPU-6500 según fuente secundaria)
-- Driver propio (mpu6500.c/.h), HAL puro: lectura en ráfaga de 14 bytes (accel, temperatura cruda, gyro)
+- Driver propio (mpu6500.c/.h), HAL puro: lectura en ráfaga de 14 bytes (accel, temperatura, gyro)
 - Rango fijado explícitamente: ±2 g (16384 LSB/g) y ±250 °/s (131 LSB/(°/s)), leído de vuelta (0x00 en ambos)
-- Salida en unidades físicas con enteros: mg y mdps (sin float)
-- Registros y sensibilidades verificados contra el Register Map oficial MPU-6000/6050 Rev 4.0 y el datasheet MPU-6500
-- Validación: offsets de reposo del giroscopio del orden de 0.3 a 2.5 °/s por eje (sin calibrar), estables entre arranques
-- Validación: signos de gx, gy y gz coherentes con el acelerómetro (regla de la mano derecha); no se hizo prueba aislada por eje
-- Saturación observada en ±250 °/s con movimiento brusco (captura raw); sin saturación en la captura final (máx. ≈ 142 °/s)
-- Temperatura no convertida: el MPU-6500 usa otra fórmula que el MPU-6050
+- Salida en unidades físicas con enteros: mg, mdps y centésimas de °C (sin float)
+- Registros y sensibilidades verificados contra el Register Map oficial MPU-6000/6050 Rev 4.0 y el datasheet MPU-6500 Rev 1.0
+- Calibración del acelerometro (8 poses a mano, ver docs/calibracion_mpu.md): offsets X +11, Y −8, Z +274 mg; ganancias 1.004, 0.997, 1.020
+- Offset de Z fuera de la especificación del MPU-6500 (±60 mg); X e Y dentro. Causa sin determinar
+- Chequeo fuera de muestra: magnitud en reposo 0.989 g cruda → ≈ 1.000 g corregida
+- Offsets provisionales del giroscopio (mdps): gx −830, gy +2310, gz +350 (ZRO spec ±5 °/s: dentro)
+- Constantes en mpu_calib.h; MPU_APPLY_CALIB permite salida sin calibrar
+- Descarte de las primeras 10 muestras tras el arranque (picos al presionar RST)
 ### Hallazgos abiertos
-- Acelerómetro: la magnitud en reposo cambia con la orientación (≈0.99 g con Y abajo, ≈1.29 g con Z arriba). Pendiente calibración de 6 posiciones
-- Ruido del giroscopio en reposo mayor que en la captura anterior. Pendiente captura limpia y prueba CLKSEL
+- Sesgo de gz cambió entre capturas (+0.3 a +0.7 °/s): posible deriva térmica, se registra temperatura para comprobarlo
+- Calibración hecha a mano: incertidumbre ≈ ±6 mg y ±0.5 %; deriva térmica del offset de Z según datasheet ±1 mg/°C
+- Conversión de temperatura referencial (datasheet MPU-6500 preliminar), sin validar en esta unidad
 - Muestreo por polling a ~10 Hz (HAL_Delay), no determinista: se reemplaza por timer de hardware en Fase 6
 ### Nota de ramas
 - El firmware TX del protocolo v1 en NodoBovino/Core/Src/main.c queda en el tag v0.2.0; la integración con el MPU se hace en Fase 13
